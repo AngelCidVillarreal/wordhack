@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NEURAL_WORD_PRO_2077_ULTRA</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        :root {
+            --cp-yellow: #fcee0a;
+            --cp-black: #050505;
+            --cp-dark: #111111;
+            --cp-blue: #00f0ff;
+            --cp-red: #ff003c;
+            --page-bg: #ffffff;
+        }
+
+        * { box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+
+        body {
+            background-color: var(--cp-black);
+            color: var(--cp-yellow);
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        header {
+            background: var(--cp-yellow);
+            color: #000;
+            padding: 5px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 900;
+            clip-path: polygon(0 0, 100% 0, 100% 70%, 95% 100%, 0 100%);
+            z-index: 100;
+        }
+
+        .ribbon {
+            background: var(--cp-dark);
+            border-bottom: 2px solid var(--cp-yellow);
+            padding: 8px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        }
+
+        .group {
+            border-right: 1px solid #444;
+            padding-right: 10px;
+            display: flex;
+            gap: 4px;
+            align-items: center;
+        }
+
+        .group-label {
+            font-size: 0.6rem;
+            color: #666;
+            text-transform: uppercase;
+            margin-right: 5px;
+        }
+
+        button, select {
+            background: #222;
+            border: 1px solid var(--cp-yellow);
+            color: var(--cp-yellow);
+            padding: 4px 8px;
+            cursor: pointer;
+            font-size: 0.7rem;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+
+        button:hover { background: var(--cp-yellow); color: #000; }
+        .btn-blue { border-color: var(--cp-blue); color: var(--cp-blue); }
+        .btn-blue:hover { background: var(--cp-blue); color: #000; }
+        .btn-danger { border-color: var(--cp-red); color: var(--cp-red); }
+
+        .workspace {
+            flex: 1;
+            overflow-y: auto;
+            background: #0a0a0a;
+            padding: 40px 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            scrollbar-width: thin;
+            scrollbar-color: var(--cp-yellow) #000;
+        }
+
+        .page {
+            width: 210mm;
+            min-height: 297mm;
+            background: var(--page-bg);
+            color: #000;
+            padding: 20mm;
+            box-shadow: 0 0 20px rgba(0,0,0,0.8);
+            outline: none;
+            cursor: text;
+            word-wrap: break-word;
+            font-size: 12pt;
+        }
+
+        /* Estilos internos para elementos de Word */
+        .page table { border-collapse: collapse; width: 100%; margin: 10px 0; }
+        .page td, .page th { border: 1px solid #ccc; padding: 8px; }
+        .page img { max-width: 100%; height: auto; }
+
+        #status-bar {
+            background: var(--cp-yellow);
+            color: #000;
+            padding: 3px 20px;
+            font-size: 0.65rem;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .crt {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.05) 50%);
+            background-size: 100% 4px; pointer-events: none; z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+
+<div class="crt"></div>
+
+<header>
+    <span>ARASAKA_DOC_PRO_v5.0_ULTRA</span>
+    <span id="clock">00:00:00</span>
+</header>
+
+<div class="ribbon">
+    <div class="group">
+        <button onclick="downloadDoc()" class="btn-blue">💾 EXPORTAR PDF</button>
+        <button onclick="addPage()" class="btn-blue">+ HOJA</button>
+    </div>
+
+    <div class="group">
+        <select onchange="format('fontName', this.value)">
+            <option value="Arial">Arial</option>
+            <option value="Courier New">Courier</option>
+            <option value="Times New Roman">Times</option>
+            <option value="Georgia">Georgia</option>
+            <option value="Verdana">Verdana</option>
+        </select>
+        <select onchange="format('fontSize', this.value)">
+            <option value="1">8pt</option>
+            <option value="2">10pt</option>
+            <option value="3" selected>12pt</option>
+            <option value="4">14pt</option>
+            <option value="5">18pt</option>
+            <option value="6">24pt</option>
+            <option value="7">36pt</option>
+        </select>
+    </div>
+
+    <div class="group">
+        <button onclick="format('bold')"><b>B</b></button>
+        <button onclick="format('italic')"><i>I</i></button>
+        <button onclick="format('underline')"><u>U</u></button>
+        <button onclick="format('strikeThrough')"><s>S</s></button>
+        <input type="color" onchange="format('foreColor', this.value)" title="Color de Texto" style="width:30px; height:24px; border:none; background:none; cursor:pointer;">
+    </div>
+
+    <div class="group">
+        <button onclick="format('justifyLeft')">⬅</button>
+        <button onclick="format('justifyCenter')">⬆</button>
+        <button onclick="format('justifyRight')">➡</button>
+        <button onclick="format('justifyFull')">≡</button>
+    </div>
+
+    <div class="group">
+        <button onclick="format('insertUnorderedList')">• Lista</button>
+        <button onclick="format('insertOrderedList')">1. Lista</button>
+        <button onclick="insertTable()">+ Tabla</button>
+        <button onclick="document.getElementById('imgInput').click()">+ Imagen</button>
+        <input type="file" id="imgInput" hidden accept="image/*" onchange="insertImage(this)">
+    </div>
+
+    <button onclick="clearAll()" class="btn-danger">WIPE DATA</button>
+</div>
+
+<div class="workspace" id="document-container">
+    </div>
+
+<div id="status-bar">
+    <span id="wordCount">PALABRAS: 0</span>
+    <span>CONEXIÓN: NEURAL_LINK_STABLE // ENC: AES-256</span>
+    <span id="pageCount">PÁGINAS: 1</span>
+</div>
+
+<script>
+    let pageCount = 1;
+
+    // Inicialización
+    window.onload = () => {
+        const savedData = localStorage.getItem('arasaka_doc_content');
+        if (savedData) {
+            document.getElementById('document-container').innerHTML = savedData;
+            updateStats();
+        } else {
+            resetDocument();
+        }
+    };
+
+    function format(command, value = null) {
+        document.execCommand(command, false, value);
+        saveToLocal();
+    }
+
+    function resetDocument() {
+        const container = document.getElementById('document-container');
+        container.innerHTML = `
+            <div class="page" contenteditable="true" id="page-1">
+                <h1 style="text-align: center;">INFORME DE OPERACIONES</h1>
+                <p><b>Sujeto:</b> [NOMBRE_CLAVE]</p>
+                <hr>
+                <p>Inicie la transcripción neural aquí...</p>
+            </div>`;
+        updateStats();
+    }
+
+    function addPage() {
+        pageCount++;
+        const container = document.getElementById('document-container');
+        const newPage = document.createElement('div');
+        newPage.className = 'page';
+        newPage.contentEditable = 'true';
+        newPage.id = `page-${Date.now()}`;
+        container.appendChild(newPage);
+        newPage.focus();
+        updateStats();
+        saveToLocal();
+    }
+
+    function insertTable() {
+        const rows = prompt("Número de filas:", 2);
+        const cols = prompt("Número de columnas:", 2);
+        if(!rows || !cols) return;
+        
+        let table = `<table style="width:100%; border:1px solid black;">`;
+        for(let i=0; i<rows; i++){
+            table += "<tr>";
+            for(let j=0; j<cols; j++) table += "<td>Data</td>";
+            table += "</tr>";
+        }
+        table += "</table><p></p>";
+        document.execCommand('insertHTML', false, table);
+    }
+
+    function insertImage(input) {
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = `<img src="${e.target.result}" />`;
+                document.execCommand('insertHTML', false, img);
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    function downloadDoc() {
+        const element = document.getElementById('document-container');
+        const opt = {
+            margin: 0,
+            filename: 'SECRET_DATA_SHARD.pdf',
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2, useCORS: true, backgroundColor: '#ffffff' },
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+            pagebreak: { mode: 'css', before: '.page' }
+        };
+        html2pdf().set(opt).from(element).save();
+    }
+
+    function saveToLocal() {
+        const content = document.getElementById('document-container').innerHTML;
+        localStorage.setItem('arasaka_doc_content', content);
+        updateStats();
+    }
+
+    function updateStats() {
+        const text = document.getElementById('document-container').innerText;
+        const words = text.trim() ? text.trim().split(/\s+/).length : 0;
+        const pages = document.querySelectorAll('.page').length;
+        
+        document.getElementById('wordCount').innerText = `PALABRAS: ${words}`;
+        document.getElementById('pageCount').innerText = `PÁGINAS: ${pages}`;
+    }
+
+    function clearAll() {
+        if(confirm("¿BORRADO TOTAL DE DATOS? Esta acción es irreversible.")) {
+            localStorage.removeItem('arasaka_doc_content');
+            resetDocument();
+        }
+    }
+
+    // Escuchar cambios para auto-guardado
+    document.getElementById('document-container').addEventListener('input', saveToLocal);
+
+    setInterval(() => {
+        document.getElementById('clock').innerText = new Date().toLocaleTimeString();
+    }, 1000);
+</script>
+
+</body>
+</html>
