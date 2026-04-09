@@ -3,92 +3,146 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NEURAL_WORD_PRO_2077_ULTRA</title>
+    <title>PROGRAM.DOC // NEURAL_INTERFACE</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
         :root {
             --cp-yellow: #fcee0a;
             --cp-black: #050505;
-            --cp-dark: #111111;
+            --cp-dark: #0a0a0a;
             --cp-blue: #00f0ff;
             --cp-red: #ff003c;
+            --cp-magenta: #ab44ff;
             --page-bg: #ffffff;
         }
 
-        * { box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        @keyframes scanline { 0% { transform: translateY(-100%); } 100% { transform: translateY(100%); } }
+        @keyframes scrollCode { from { transform: translateY(0); } to { transform: translateY(-50%); } }
+        @keyframes glitch {
+            0% { text-shadow: 2px 0 var(--cp-red), -2px 0 var(--cp-blue); }
+            50% { text-shadow: -2px 0 var(--cp-magenta), 2px 0 var(--cp-yellow); }
+            100% { text-shadow: 2px 0 var(--cp-red), -2px 0 var(--cp-blue); }
+        }
+
+        * { box-sizing: border-box; font-family: 'Courier New', Courier, monospace; }
 
         body {
             background-color: var(--cp-black);
-            color: var(--cp-yellow);
             margin: 0;
             height: 100vh;
             display: flex;
             flex-direction: column;
             overflow: hidden;
+            position: relative;
         }
 
+        /* --- FONDO DE TERMINAL ANIMADA --- */
+        .bg-terminal {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1;
+            opacity: 0.15;
+            color: var(--cp-blue);
+            font-size: 10px;
+            overflow: hidden;
+            pointer-events: none;
+            padding: 10px;
+            line-height: 1.2;
+        }
+
+        .code-container { animation: scrollCode 20s linear infinite; }
+
+        /* --- HEADER --- */
         header {
             background: var(--cp-yellow);
             color: #000;
-            padding: 5px 20px;
+            padding: 8px 25px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             font-weight: 900;
-            clip-path: polygon(0 0, 100% 0, 100% 70%, 95% 100%, 0 100%);
+            clip-path: polygon(0 0, 100% 0, 100% 70%, 98% 100%, 0 100%);
+            border-bottom: 3px solid var(--cp-blue);
             z-index: 100;
         }
 
+        .brand { font-size: 1.1rem; animation: glitch 2s infinite linear; }
+
+        /* --- RIBBON (HERRAMIENTAS) --- */
         .ribbon {
-            background: var(--cp-dark);
-            border-bottom: 2px solid var(--cp-yellow);
-            padding: 8px;
+            background: rgba(10, 10, 10, 0.9);
+            border-bottom: 1px solid var(--cp-blue);
+            padding: 10px;
             display: flex;
-            gap: 10px;
+            gap: 12px;
             flex-wrap: wrap;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            backdrop-filter: blur(8px);
+            z-index: 90;
         }
 
         .group {
-            border-right: 1px solid #444;
-            padding-right: 10px;
+            border-left: 2px solid var(--cp-blue);
+            background: rgba(255, 255, 255, 0.03);
+            padding: 5px 10px;
             display: flex;
-            gap: 4px;
+            gap: 8px;
             align-items: center;
         }
 
-        .group-label {
-            font-size: 0.6rem;
-            color: #666;
-            text-transform: uppercase;
-            margin-right: 5px;
-        }
-
-        button, select {
-            background: #222;
-            border: 1px solid var(--cp-yellow);
-            color: var(--cp-yellow);
-            padding: 4px 8px;
+        button, select, input[type="color"] {
+            background: #000;
+            border: 1px solid var(--cp-blue);
+            color: var(--cp-blue);
+            padding: 5px 10px;
             cursor: pointer;
             font-size: 0.7rem;
-            font-weight: bold;
-            transition: 0.2s;
+            text-transform: uppercase;
+            transition: 0.1s;
         }
 
-        button:hover { background: var(--cp-yellow); color: #000; }
-        .btn-blue { border-color: var(--cp-blue); color: var(--cp-blue); }
-        .btn-blue:hover { background: var(--cp-blue); color: #000; }
-        .btn-danger { border-color: var(--cp-red); color: var(--cp-red); }
+        input[type="color"] {
+            padding: 0;
+            width: 30px;
+            height: 25px;
+        }
+
+        button:hover {
+            background: var(--cp-blue);
+            color: #000;
+            box-shadow: 0 0 15px var(--cp-blue);
+        }
+
+        label {
+            color: var(--cp-blue);
+            font-size: 0.6rem;
+            text-transform: uppercase;
+        }
+
+        /* --- ÁREA DE TRABAJO --- */
+        .main-layout {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .sidebar-diag {
+            width: 150px;
+            border-right: 1px solid rgba(0, 240, 255, 0.2);
+            padding: 20px 10px;
+            font-size: 0.6rem;
+            color: var(--cp-blue);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
 
         .workspace {
             flex: 1;
             overflow-y: auto;
-            background: #0a0a0a;
             padding: 40px 0;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 20px;
             scrollbar-width: thin;
             scrollbar-color: var(--cp-yellow) #000;
         }
@@ -97,112 +151,108 @@
             width: 210mm;
             min-height: 297mm;
             background: var(--page-bg);
-            color: #000;
+            color: #111;
             padding: 20mm;
-            box-shadow: 0 0 20px rgba(0,0,0,0.8);
+            margin-bottom: 40px;
+            box-shadow: 15px 15px 0px var(--cp-red);
             outline: none;
-            cursor: text;
-            word-wrap: break-word;
-            font-size: 12pt;
+            position: relative;
+            font-family: 'Segoe UI', sans-serif;
         }
 
-        /* Estilos internos para elementos de Word */
-        .page table { border-collapse: collapse; width: 100%; margin: 10px 0; }
-        .page td, .page th { border: 1px solid #ccc; padding: 8px; }
-        .page img { max-width: 100%; height: auto; }
+        /* --- CRT EFFECT --- */
+        .crt-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.08) 50%),
+                        linear-gradient(90deg, rgba(255, 0, 0, 0.02), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.02));
+            background-size: 100% 4px, 3px 100%;
+            pointer-events: none; z-index: 1000;
+        }
 
         #status-bar {
             background: var(--cp-yellow);
             color: #000;
-            padding: 3px 20px;
+            padding: 4px 20px;
             font-size: 0.65rem;
-            font-weight: bold;
             display: flex;
             justify-content: space-between;
-        }
-
-        .crt {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.05) 50%);
-            background-size: 100% 4px; pointer-events: none; z-index: 1000;
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
 
-<div class="crt"></div>
+<div class="crt-overlay"></div>
+
+<div class="bg-terminal">
+    <div class="code-container" id="bgCode">
+        // INICIALIZANDO INTERFAZ NEURAL...<br>
+        > sudo mount /dev/neural_link<br>
+        > loading modules: [CORE] [UI] [DRIVERS]<br>
+        > status: ONLINE<br>
+        // TRACE REROUTED VIA NIGHT_CITY_NET<br>
+        // ENCRYPTING PACKETS... OK<br>
+        // WARNING: ICE BREAKER DETECTED<br>
+        // SYNCING WITH CLOUD_DATA_SHARD...<br>
+        // CPU_LOAD: 24% | TEMP: 42C<br>
+        // SESSION_ID: 0x882A_00FF_2077<br>
+        [A LARGER BLOCK OF DATA FOLLOWS]<br>
+        01001010 01010101 01001110 01001011<br>
+        01010011 01001000 01000001 01010010<br>
+        // REPEAT CYCLE...
+    </div>
+</div>
 
 <header>
-    <span>ARASAKA_DOC_PRO_v5.0_ULTRA</span>
-    <span id="clock">00:00:00</span>
+    <span class="brand">SYSTEM://PROGRAM.DOC_v2.077</span>
+    <div style="font-size: 0.7rem;">CPU_STABLE // <span id="clock">00:00:00</span></div>
 </header>
 
 <div class="ribbon">
     <div class="group">
-        <button onclick="downloadDoc()" class="btn-blue">💾 EXPORTAR PDF</button>
-        <button onclick="addPage()" class="btn-blue">+ HOJA</button>
+        <button onclick="downloadDoc()" style="border-color: var(--cp-yellow); color: var(--cp-yellow);">💾 EXPORT_SHARD</button>
+        <button onclick="addPage()">+ NEW_SECTOR</button>
     </div>
-
     <div class="group">
         <select onchange="format('fontName', this.value)">
-            <option value="Arial">Arial</option>
-            <option value="Courier New">Courier</option>
-            <option value="Times New Roman">Times</option>
-            <option value="Georgia">Georgia</option>
-            <option value="Verdana">Verdana</option>
+            <option value="Arial">Cyber_Sans</option>
+            <option value="Courier New" selected>Neural_Mono</option>
+            <option value="Verdana">Tech_Flow</option>
         </select>
-        <select onchange="format('fontSize', this.value)">
-            <option value="1">8pt</option>
-            <option value="2">10pt</option>
-            <option value="3" selected>12pt</option>
-            <option value="4">14pt</option>
-            <option value="5">18pt</option>
-            <option value="6">24pt</option>
-            <option value="7">36pt</option>
-        </select>
+        <button onclick="format('bold')">B</button>
+        <button onclick="format('italic')">I</button>
+        <div style="display:flex; align-items:center; gap:5px;">
+            <label>COLOR:</label>
+            <input type="color" oninput="format('foreColor', this.value)" value="#ff003c">
+        </div>
+        <button onclick="insertTable()">+ GRID</button>
     </div>
-
-    <div class="group">
-        <button onclick="format('bold')"><b>B</b></button>
-        <button onclick="format('italic')"><i>I</i></button>
-        <button onclick="format('underline')"><u>U</u></button>
-        <button onclick="format('strikeThrough')"><s>S</s></button>
-        <input type="color" onchange="format('foreColor', this.value)" title="Color de Texto" style="width:30px; height:24px; border:none; background:none; cursor:pointer;">
-    </div>
-
-    <div class="group">
-        <button onclick="format('justifyLeft')">⬅</button>
-        <button onclick="format('justifyCenter')">⬆</button>
-        <button onclick="format('justifyRight')">➡</button>
-        <button onclick="format('justifyFull')">≡</button>
-    </div>
-
-    <div class="group">
-        <button onclick="format('insertUnorderedList')">• Lista</button>
-        <button onclick="format('insertOrderedList')">1. Lista</button>
-        <button onclick="insertTable()">+ Tabla</button>
-        <button onclick="document.getElementById('imgInput').click()">+ Imagen</button>
-        <input type="file" id="imgInput" hidden accept="image/*" onchange="insertImage(this)">
-    </div>
-
-    <button onclick="clearAll()" class="btn-danger">WIPE DATA</button>
+    <button onclick="clearAll()" style="border-color: var(--cp-red); color: var(--cp-red);">WIPE_MEMORY</button>
 </div>
 
-<div class="workspace" id="document-container">
+<div class="main-layout">
+    <div class="sidebar-diag">
+        <div>[ DIAGNOSTICS ]<br>---<br>ICE: LEVEL 4<br>BUFF: ACTIVE<br>SCAN: 100%</div>
+        <div style="color: var(--cp-red)">[ ALERTS ]<br>---<br>NO ERRORS</div>
     </div>
+    
+    <div class="workspace" id="document-container">
+        </div>
+</div>
 
 <div id="status-bar">
-    <span id="wordCount">PALABRAS: 0</span>
-    <span>CONEXIÓN: NEURAL_LINK_STABLE // ENC: AES-256</span>
-    <span id="pageCount">PÁGINAS: 1</span>
+    <span id="wordCount">DATA_UNITS: 0</span>
+    <span>ENCRYPTION: BRAINDANCE_AES_256</span>
+    <span id="pageCount">SECTORS: 1</span>
 </div>
 
 <script>
-    let pageCount = 1;
+    // Duplicar el código de fondo para el efecto de scroll infinito
+    const bgCode = document.getElementById('bgCode');
+    bgCode.innerHTML += bgCode.innerHTML + bgCode.innerHTML + bgCode.innerHTML;
 
-    // Inicialización
     window.onload = () => {
-        const savedData = localStorage.getItem('arasaka_doc_content');
+        const savedData = localStorage.getItem('program_doc_content');
         if (savedData) {
             document.getElementById('document-container').innerHTML = savedData;
             updateStats();
@@ -217,96 +267,75 @@
     }
 
     function resetDocument() {
-        const container = document.getElementById('document-container');
-        container.innerHTML = `
-            <div class="page" contenteditable="true" id="page-1">
-                <h1 style="text-align: center;">INFORME DE OPERACIONES</h1>
-                <p><b>Sujeto:</b> [NOMBRE_CLAVE]</p>
+        document.getElementById('document-container').innerHTML = `
+            <div class="page" contenteditable="true">
+                <h1 style="text-align:center; color:var(--cp-red);">DATA REPORT // 2077</h1>
+                <p><b>DESTINO:</b> [CONFIDENCIAL]</p>
                 <hr>
-                <p>Inicie la transcripción neural aquí...</p>
+                <p>Escriba aquí los logs de la misión...</p>
             </div>`;
         updateStats();
     }
 
     function addPage() {
-        pageCount++;
-        const container = document.getElementById('document-container');
-        const newPage = document.createElement('div');
-        newPage.className = 'page';
-        newPage.contentEditable = 'true';
-        newPage.id = `page-${Date.now()}`;
-        container.appendChild(newPage);
-        newPage.focus();
+        const page = document.createElement('div');
+        page.className = 'page';
+        page.contentEditable = 'true';
+        document.getElementById('document-container').appendChild(page);
         updateStats();
         saveToLocal();
     }
 
     function insertTable() {
-        const rows = prompt("Número de filas:", 2);
-        const cols = prompt("Número de columnas:", 2);
-        if(!rows || !cols) return;
-        
-        let table = `<table style="width:100%; border:1px solid black;">`;
-        for(let i=0; i<rows; i++){
-            table += "<tr>";
-            for(let j=0; j<cols; j++) table += "<td>Data</td>";
-            table += "</tr>";
-        }
-        table += "</table><p></p>";
+        let table = `<table style="width:100%; border:1px solid #00f0ff; border-collapse: collapse; margin: 10px 0;">
+            <tr>
+                <td style="border:1px solid #333; padding:8px;">ID_LINK</td>
+                <td style="border:1px solid #333; padding:8px;">STATUS</td>
+            </tr>
+            <tr>
+                <td style="border:1px solid #333; padding:8px;">...</td>
+                <td style="border:1px solid #333; padding:8px;">...</td>
+            </tr>
+        </table><p></p>`;
         document.execCommand('insertHTML', false, table);
-    }
-
-    function insertImage(input) {
-        if (input.files && input.files[0]) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const img = `<img src="${e.target.result}" />`;
-                document.execCommand('insertHTML', false, img);
-            };
-            reader.readAsDataURL(input.files[0]);
-        }
     }
 
     function downloadDoc() {
         const element = document.getElementById('document-container');
         const opt = {
             margin: 0,
-            filename: 'SECRET_DATA_SHARD.pdf',
+            filename: 'SECRET_SHARD_2077.pdf',
             image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { scale: 2, useCORS: true, backgroundColor: '#ffffff' },
-            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-            pagebreak: { mode: 'css', before: '.page' }
+            html2canvas: { scale: 2, logging: false },
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
         };
-        html2pdf().set(opt).from(element).save();
+        html2pdf().from(element).set(opt).save();
     }
 
     function saveToLocal() {
-        const content = document.getElementById('document-container').innerHTML;
-        localStorage.setItem('arasaka_doc_content', content);
+        localStorage.setItem('program_doc_content', document.getElementById('document-container').innerHTML);
         updateStats();
     }
 
     function updateStats() {
-        const text = document.getElementById('document-container').innerText;
+        const container = document.getElementById('document-container');
+        const text = container.innerText;
         const words = text.trim() ? text.trim().split(/\s+/).length : 0;
-        const pages = document.querySelectorAll('.page').length;
-        
-        document.getElementById('wordCount').innerText = `PALABRAS: ${words}`;
-        document.getElementById('pageCount').innerText = `PÁGINAS: ${pages}`;
+        document.getElementById('wordCount').innerText = `DATA_UNITS: ${words}`;
+        document.getElementById('pageCount').innerText = `SECTORS: ${document.querySelectorAll('.page').length}`;
     }
 
     function clearAll() {
-        if(confirm("¿BORRADO TOTAL DE DATOS? Esta acción es irreversible.")) {
-            localStorage.removeItem('arasaka_doc_content');
-            resetDocument();
+        if(confirm("WIPE MEMORY? Todos los datos no exportados se perderán.")) { 
+            localStorage.removeItem('program_doc_content'); 
+            resetDocument(); 
         }
     }
 
-    // Escuchar cambios para auto-guardado
+    // Event listeners
     document.getElementById('document-container').addEventListener('input', saveToLocal);
-
-    setInterval(() => {
-        document.getElementById('clock').innerText = new Date().toLocaleTimeString();
+    setInterval(() => { 
+        document.getElementById('clock').innerText = new Date().toLocaleTimeString(); 
     }, 1000);
 </script>
 
